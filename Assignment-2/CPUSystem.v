@@ -328,15 +328,10 @@ module CPUSystem(
 
             if(T[3]) begin
                 case(Opcode)
-                    6'h07: begin
-                        // S1 + 1
-                        RF_ScrSel = 4'b0111;
-                        RF_FunSel = 2'b10;
-                    end
-                    6'h08: begin
-                        // S1 - 1
-                        RF_ScrSel = 4'b0111;
-                        RF_FunSel = 2'b11;
+                    6'h07, 6'h08: begin
+                        // clear S2 to perform A + 1 on ALU
+                        RF_ScrSel = 4'b1011;
+                        RF_FunSel = 2'b00;
                     end
                     6'h09, 6'h0A, 6'h0B, 6'h0C, 6'h0D, 6'h0E: begin
                         // scratch registerdan ALU'ya
@@ -385,19 +380,9 @@ module CPUSystem(
             if(T[4]) begin
                 case (Opcode)
                     6'h07, 6'h08: begin
-                        // DSTREG <- ALU(S1), WF = 1 
-                        ALU_WF = 1;
-                        ALU_FunSel = 4'b0000;
-                        RF_OutASel = 3'b100;
-
-                        ARF_FunSel = 2'b01;
-                        RF_FunSel = 2'b01;
-                        ARF_RegSel = is_dstreg_rf ? 3'b111 : dst_ARF_RegSel;
-                        RF_RegSel = is_dstreg_rf ? dst_RF_RegSel : 4'b1111;
-
-                        MuxASel = 2'b00;
-                        MuxBSel = 2'b00;
-                        T_Reset = 1;
+                        // increment s2 from 0 to 1
+                        RF_ScrSel = 4'b1011;
+                        RF_FunSel = 2'b10; 
                     end 
                     6'h0f, 6'h10, 6'h11, 6'h12, 6'h13, 6'h14, 6'h15: begin
                             // bu statement hem SrcReg1 hem de SrcReg2'in ARF'de
@@ -418,6 +403,35 @@ module CPUSystem(
                             T_Reset = 1;
                     end
                 endcase
+            end
+
+            if(T[5]) begin
+                6'h07: begin  // INC: ADD(S1, S2=1)
+                    RF_OutASel = 3'b100;
+                    RF_OutBSel = 3'b101;
+                    ALU_FunSel = 4'b0100;
+                    ALU_WF     = 1;
+                    MuxASel    = 2'b00;
+                    MuxBSel    = 2'b00;
+                    RF_FunSel  = 2'b01;
+                    ARF_FunSel = 2'b01;
+                    RF_RegSel  = is_dstreg_rf ? dst_RF_RegSel  : 4'b1111;
+                    ARF_RegSel = is_dstreg_rf ? 3'b111 : dst_ARF_RegSel;
+                    T_Reset    = 1;
+                end
+                6'h08: begin  // DEC: SUB(S1, S2=1)
+                    RF_OutASel = 3'b100;
+                    RF_OutBSel = 3'b101;
+                    ALU_FunSel = 4'b0110;
+                    ALU_WF     = 1;
+                    MuxASel    = 2'b00;
+                    MuxBSel    = 2'b00;
+                    RF_FunSel  = 2'b01;
+                    ARF_FunSel = 2'b01;
+                    RF_RegSel  = is_dstreg_rf ? dst_RF_RegSel  : 4'b1111;
+                    ARF_RegSel = is_dstreg_rf ? 3'b111 : dst_ARF_RegSel;
+                    T_Reset    = 1;
+                end
             end
         end
     end

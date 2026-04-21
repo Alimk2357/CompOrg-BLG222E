@@ -98,18 +98,17 @@ module ArithmeticLogicUnit(
                 next_flags[3] = (ALUOut == 0);
             end
             4'b1110: begin
-                // hata var
-                ALUOut = {A[14:0], A[15]};
+                ALUOut = {A[14:0], FlagsOut[2]};
                 next_flags[3] = (ALUOut == 0);
                 next_flags[2] = A[15];
-                next_flags[1] = (ALUOut[15]);
+                next_flags[1] = ALUOut[15];
             end
             4'b1111: begin
                 // hata var
-                ALUOut = {A[0], A[15:1]};
+                ALUOut = {FlagsOut[2], A[15:1]};
                 next_flags[3] = (ALUOut == 0);
                 next_flags[2] = A[0];
-                next_flags[1] = (ALUOut[15]);
+                next_flags[1] = ALUOut[15];
             end
         endcase
     end
