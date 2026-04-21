@@ -406,32 +406,34 @@ module CPUSystem(
             end
 
             if(T[5]) begin
-                6'h07: begin  // INC: ADD(S1, S2=1)
-                    RF_OutASel = 3'b100;
-                    RF_OutBSel = 3'b101;
-                    ALU_FunSel = 4'b0100;
-                    ALU_WF     = 1;
-                    MuxASel    = 2'b00;
-                    MuxBSel    = 2'b00;
-                    RF_FunSel  = 2'b01;
-                    ARF_FunSel = 2'b01;
-                    RF_RegSel  = is_dstreg_rf ? dst_RF_RegSel  : 4'b1111;
-                    ARF_RegSel = is_dstreg_rf ? 3'b111 : dst_ARF_RegSel;
-                    T_Reset    = 1;
-                end
-                6'h08: begin  // DEC: SUB(S1, S2=1)
-                    RF_OutASel = 3'b100;
-                    RF_OutBSel = 3'b101;
-                    ALU_FunSel = 4'b0110;
-                    ALU_WF     = 1;
-                    MuxASel    = 2'b00;
-                    MuxBSel    = 2'b00;
-                    RF_FunSel  = 2'b01;
-                    ARF_FunSel = 2'b01;
-                    RF_RegSel  = is_dstreg_rf ? dst_RF_RegSel  : 4'b1111;
-                    ARF_RegSel = is_dstreg_rf ? 3'b111 : dst_ARF_RegSel;
-                    T_Reset    = 1;
-                end
+                case(Opcode)
+                    6'h07: begin
+                        RF_OutASel = 3'b100;
+                        RF_OutBSel = 3'b101;
+                        ALU_FunSel = 4'b0100;
+                        ALU_WF = 1;
+                        MuxASel = 2'b00;
+                        MuxBSel = 2'b00;
+                        RF_FunSel = 2'b01;
+                        ARF_FunSel = 2'b01;
+                        RF_RegSel = is_dstreg_rf ? dst_RF_RegSel  : 4'b1111;
+                        ARF_RegSel = is_dstreg_rf ? 3'b111 : dst_ARF_RegSel;
+                        T_Reset = 1;
+                    end
+                    6'h08: begin  // DEC: SUB(S1, S2=1)
+                        RF_OutASel = 3'b100;
+                        RF_OutBSel = 3'b101;
+                        ALU_FunSel = 4'b0110;
+                        ALU_WF = 1;
+                        MuxASel = 2'b00;
+                        MuxBSel = 2'b00;
+                        RF_FunSel = 2'b01;
+                        ARF_FunSel = 2'b01;
+                        RF_RegSel = is_dstreg_rf ? dst_RF_RegSel  : 4'b1111;
+                        ARF_RegSel = is_dstreg_rf ? 3'b111 : dst_ARF_RegSel;
+                        T_Reset = 1;
+                    end
+                endcase
             end
         end
     end
